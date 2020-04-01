@@ -101,7 +101,7 @@ double* PVR(double** A, double* F, int n)
 	double* x;
 	x = new double[n];
 	xn = new double[n];
-	w = 1.1;
+	w = 1.000001;
 	for (int i = 0; i < 10; i++)
 	{
 		xn[i] = 0;
@@ -289,17 +289,22 @@ void invert(double** M, int n)
 
 int main()
 {
-	double ** Coef, ** CoefZ, * igrik, * f, * Gaus_Ans, * PVR_Ans, Max_1 = -256, Max_2 = -256, Sum = 0;
+	double ** Coef, ** CoefN, ** CoefG, ** Coefpvr, * fG, * fpvr, * f, * Gaus_Ans, * PVR_Ans, Max_1 = -256, Max_2 = -256, Sum = 0;
 	int n = 100;
 	int b = 10;
 	Coef = new double* [n];
-	CoefZ = new double* [n];
+	CoefG = new double* [n];
+	CoefN = new double* [n];
+	Coefpvr = new double* [n];
 	f = new double[n];
-	igrik = new double[n];
+	fG = new double[n];
+	fpvr = new double[n];
 	for (int i = 0; i < n; i++)
 	{
 		Coef[i] = new double[n];
-		CoefZ[i] = new double[n];
+		CoefN[i] = new double[n];
+		CoefG[i] = new double[n];
+		Coefpvr[i] = new double[n];
 		for (int j = 0; j < n; j++)
 		{
 			if (j > i + 1)
@@ -309,19 +314,22 @@ int main()
 			else if (i == j)
 				Coef[i][j] = b;
 
-			CoefZ[i][j] = Coef[i][j];
+			CoefG[i][j] = Coef[i][j];
+			Coefpvr[i][j] = Coef[i][j];
+			CoefN[i][j] = Coef[i][j];
 		}
 	}
 	for (int i = 0; i < n; i++)
 	{
 		f[i] = ((i + 1) + 2);
-		igrik[i] = f[i];
+		fG[i] = f[i];
+		fpvr[i] = f[i];
 	}
 
 
 
 	//SysEquCout(Coef, f, n);
-	Gaus_Ans = GausMet(Coef, f, n);
+	Gaus_Ans = GausMet(CoefG, fG, n);
 	/////////////////////////////ans1.dat///////////////////////////////////////////
 	ofstream gauss("ans1.dat");
 	for (int i = 0; i < n; i++)
@@ -330,7 +338,7 @@ int main()
 	}
 	gauss.close();
 
-	PVR_Ans = PVR(Coef, f, n);
+	PVR_Ans = PVR(Coefpvr, fpvr, n);
 	/////////////////////////////ans2.dat///////////////////////////////////////////
 	ofstream pvr("ans2.dat");
 	for (int i = 0; i < n; i++)
@@ -344,8 +352,8 @@ int main()
 		cout << "x(PVR)[" << i + 1 << "] = " << PVR_Ans[i] << "\t\t" << "x(GAUSS)[" << i + 1 << "] = " << Gaus_Ans[i] << endl;
 	}
 	/////////////////////////////////////////////////////////////////////////////////
-	cout << "Rate of residual vectors for Gauss metod: " << Residual_vect(CoefZ, igrik, Gaus_Ans, n) << endl;
-	cout << "Rate of residual vectors for PVR metod: " << Residual_vect(CoefZ, igrik, PVR_Ans, n) << endl;
+	cout << "Norm of the discrepancy vector for Gauss metod: " << Residual_vect(CoefN, f, Gaus_Ans, n) << endl;
+	cout << "Norm of the discrepancy vector for PVR metod: " << Residual_vect(CoefN, f, PVR_Ans, n) << endl;
 
 	/////////////////////////////////////////////////////////////////////////////////
 
